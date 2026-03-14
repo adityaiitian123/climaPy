@@ -4,168 +4,105 @@ import numpy as np
 import pandas as pd
 
 class InteractiveAtlasRenderer:
-    """Renderer for premium 3D globes and anomaly visualizations."""
+    """Renders high-performance climate visualizations with absolute stability."""
     
     @staticmethod
-    def render_interactive_atlas(df, var, units, title="Copernicus Interactive Atlas"):
-        """Renders a high-fidelity orthographic 3D globe."""
-        if df.empty:
-            st.warning("No data for Atlas projection.")
+    def render_interactive_atlas(df, var, units, title):
+        """☢️ THE NUCLEAR BYPASS: Raw dictionary rendering. 100% constructor-free."""
+        if df is None or df.empty:
+            st.warning("No data found for planetary projection.")
             return
 
-        # sample for performance but keep density
-        if len(df) > 5000:
-            df_plot = df.sample(5000)
-        else:
-            df_plot = df
+        # Prepare raw data lists for 100% stability
+        lats = df['lat'].tolist()
+        lons = df['lon'].tolist()
+        hover_text = df[var].apply(lambda x: f"{x:.2f} {units}").tolist()
 
-        fig = go.Figure()
-
-        # High-visibility colorscales
-        is_anomaly = "anomaly" in var.lower() or "change" in var.lower()
-        colorscale = "RdBu_r" if is_anomaly else "Turbo"
-
-        # ☢️ NUCLEAR OPTION: Dictionary-based bypass for Python 3.14
-        try:
-            # We use a raw dict to bypass Plotly's object validation layer entirely
-            # This is the most "indestructible" way to render in experimental environments
-            trace = {
+        # 🛸 THE TOTAL DICTIONARY BYPASS
+        # This structure avoids ALL Plotly object constructors (go.Scattergeo, go.Figure, etc.)
+        # and therefore bypasses the broken validation logic in experimental Python 3.14.
+        fig_dict = {
+            "data": [{
                 "type": "scattergeo",
-                "lat": df_plot['lat'].tolist(),
-                "lon": df_plot['lon'].tolist(),
+                "lat": lats,
+                "lon": lons,
                 "mode": "markers",
                 "marker": {
                     "size": 3,
                     "color": "#38bdf8",
                     "opacity": 0.8,
-                    "showscale": False
+                    "showscale": False,
+                    "line": {"width": 0}
                 },
                 "hoverinfo": "text",
-                "text": df_plot[var].apply(lambda x: f"{x:.2f} {units}").tolist()
+                "text": hover_text
+            }],
+            "layout": {
+                "title": {"text": title, "font": {"color": "#e2e8f0"}},
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "margin": {"t": 40, "b": 0, "l": 0, "r": 0},
+                "geo": {
+                    "projection": {"type": "orthographic"},
+                    "showland": True,
+                    "landcolor": "#1e293b",
+                    "showcoastlines": True,
+                    "coastlinecolor": "#334155",
+                    "showocean": True,
+                    "oceancolor": "#0f172a",
+                    "bgcolor": "rgba(0,0,0,0)",
+                    "showcountries": True,
+                    "countrycolor": "#334155"
+                },
+                "height": 600
             }
-            fig.add_trace(trace)
+        }
+
+        try:
+            st.plotly_chart(fig_dict, use_container_width=True)
         except Exception as e:
             st.info(f"💡 Visualizer in Absolute Safe Mode: {e}")
             return
 
-        # Auto-center based on data
-        avg_lat = df_plot['lat'].mean()
-        avg_lon = df_plot['lon'].mean()
-
-        fig.update_geos(
-            projection_type="orthographic",
-            projection_rotation=dict(lat=avg_lat, lon=avg_lon, roll=0),
-            showland=True,
-            landcolor="#1e293b",
-            showocean=True,
-            oceancolor="#020617",
-            showcountries=True,
-            countrycolor="#334155",
-            showcoastlines=True,
-            coastlinecolor="#475569",
-            bgcolor="rgba(0,0,0,0)",
-            framecolor="rgba(56,189,248,0.3)",
-            framewidth=1
-        )
-
-        fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#e2e8f0", family="Space Grotesk"),
-            height=650,
-            margin=dict(l=0, r=0, t=40, b=0),
-            title=dict(
-                text=title,
-                x=0.5,
-                y=0.98,
-                font=dict(size=18, color="#38bdf8")
-            )
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
     @staticmethod
     def render_climate_zone_legend():
-        """Renders a custom vertical legend for climate zones."""
-        zone_info = [
-            ("Polar", "#bae6fd", "Arctic/Antarctic extremes"),
-            ("Subpolar", "#0ea5e9", "Strict seasonal cycles"),
-            ("Temperate", "#22c55e", "Mild, humid transitions"),
-            ("Subtropical", "#f59e0b", "Warm, seasonally dry"),
-            ("Tropical", "#f97316", "Constant high warmth"),
-            ("Equatorial", "#ef4444", "Maximum solar intensity")
+        """Compact legend for the climate zones map."""
+        zones = [
+            ("Tropical", "#ef4444"),
+            ("Dry/Arid", "#f59e0b"),
+            ("Temperate", "#10b981"),
+            ("Continental", "#3b82f6"),
+            ("Polar", "#8b5cf6")
         ]
         
-        st.markdown("""
-        <div style="background:rgba(15,23,42,0.4); border:1px solid rgba(255,255,255,0.05); 
-                    border-radius:12px; padding:1.2rem; margin-top:1rem;">
-            <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; 
-                        letter-spacing:0.12em; margin-bottom:1rem; font-weight:700;">
-                Classification Legend
-            </div>
-        """, unsafe_allow_html=True)
-        
-        for name, color, desc in zone_info:
+        for name, color in zones:
             st.markdown(f"""
-            <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:0.8rem;">
-                <div style="width:14px; height:14px; background:{color}; border-radius:3px; margin-top:2px;"></div>
-                <div>
-                    <div style="font-size:0.85rem; font-weight:600; color:#e2e8f0; line-height:1;">{name}</div>
-                    <div style="font-size:0.68rem; color:#475569; margin-top:2px;">{desc}</div>
-                </div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.4rem;">
+                <div style="width:12px; height:12px; border-radius:3px; background:{color};"></div>
+                <div style="font-size:0.75rem; color:#94a3b8;">{name}</div>
             </div>
             """, unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     @staticmethod
-    def render_anomaly_bar_chart(df, title="Global Temperature Departure"):
-        """Diverging bar chart (Climate Central style)."""
-        if df.empty:
-            st.warning("Insufficient data for anomaly series.")
-            return
-
-        fig = go.Figure()
-
-        # Assign colors based on anomaly sign
-        colors = ['#ef4444' if x > 0 else '#3b82f6' for x in df['anomaly']]
-
-        fig.add_trace(go.Bar(
-            x=df['year'],
-            y=df['anomaly'],
-            marker_color=colors,
-            text=df['anomaly'].apply(lambda x: f"{x:+.2f}"),
-            hoverinfo="x+y",
-            name="Anomaly"
-        ))
-
-        # Horizontal line at 0
-        fig.add_hline(y=0, line_dash="solid", line_color="#475569", line_width=1)
-
-        fig.update_layout(
-            template="plotly_dark",
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter, sans-serif"),
-            height=400,
-            xaxis=dict(
-                title="Year",
-                showgrid=False,
-                tickfont=dict(color="#64748b")
-            ),
-            yaxis=dict(
-                title="Departure (°C)",
-                gridcolor="rgba(255,255,255,0.05)",
-                zeroline=False,
-                tickfont=dict(color="#64748b")
-            ),
-            margin=dict(l=40, r=20, t=60, b=40),
-            title=dict(
-                text=title,
-                font=dict(size=20, color="#f1f5f9"),
-                x=0,
-                y=0.95
-            ),
-            hoverlabel=dict(bgcolor="#1e293b")
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
+    def get_layout_template():
+        """Returns a dark theme template for all Plotly charts."""
+        # Note: Using standard dict for absolute stability in Python 3.14
+        return {
+            "layout": {
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "font": {"color": "#94a3b8", "size": 10},
+                "xaxis": {
+                    "showgrid": False,
+                    "zeroline": False,
+                    "tickfont": {"color": "#64748b"}
+                },
+                "yaxis": {
+                    "showgrid": True,
+                    "gridcolor": "rgba(255,255,255,0.05)",
+                    "zeroline": False,
+                    "tickfont": {"color": "#64748b"}
+                },
+                "colorway": ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#fb7185"]
+            }
+        }
