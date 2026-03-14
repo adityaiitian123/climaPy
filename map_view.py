@@ -4,6 +4,7 @@ import numpy as np
 from backend.climate_processor import ClimateProcessor
 from backend.echarts_renderer import render_echarts
 import scipy.stats as scipy_stats
+import matplotlib.pyplot as plt
 
 def render_map_view(ds, controls):
     """Spatial Command Center: heatmap with time-lapse animation + anomaly glow overlay."""
@@ -580,3 +581,82 @@ def render_primary_map_internal(ds, controls, view_mode, t_idx, show_anomaly):
             ]
         }
         render_echarts(map_opt, height=550, use_map=True)
+
+    # ─── SCIENTIFIC STATIC ANALYSIS (MATPLOTLIB) ──────────────────────────────
+    st.markdown("<div style='margin-top:2rem;'></div>", unsafe_allow_html=True)
+    with st.expander("🔬 Scientific Static Analysis", expanded=False):
+        st.markdown("""
+        <p style='color:#94a3b8; font-size:0.9rem; margin-bottom:1.5rem;'>
+            Advanced scientific plotting using Matplotlib for publication-quality static analysis.
+        </p>
+        """, unsafe_allow_html=True)
+        
+        sci_mode = st.radio("Analysis Type", ["Real-World Observation", "Synthetic Simulation"], horizontal=True)
+        
+        if sci_mode == "Synthetic Simulation":
+            # 🧪 THE USER'S PROVIDED SIMULATION LOGIC
+            lon_sim = np.linspace(68, 97, 220)
+            lat_sim = np.linspace(7, 37, 180)
+            LON, LAT = np.meshgrid(lon_sim, lat_sim)
+
+            Z = (
+                2.5 * np.exp(-((LON - 78)**2 / 40 + (LAT - 23)**2 / 25)) +
+                1.8 * np.exp(-((LON - 88)**2 / 18 + (LAT - 27)**2 / 20)) +
+                1.2 * np.sin((LON - 70) / 4) * np.cos((LAT - 10) / 5) +
+                0.8 * np.exp(-((LON - 74)**2 / 10 + (LAT - 13)**2 / 8))
+            )
+
+            fig, ax = plt.subplots(figsize=(10, 6))
+            fig.patch.set_facecolor('none')
+            ax.set_facecolor('none')
+            
+            mesh = ax.pcolormesh(LON, LAT, Z, shading="auto", cmap="viridis")
+            cbar = fig.colorbar(mesh)
+            cbar.set_label("Intensity / Variable Value", color="#94a3b8")
+            cbar.ax.yaxis.set_tick_params(color="#94a3b8")
+            plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'), color='#94a3b8')
+
+            ax.set_title("Synthetic Spatial Intensity Simulation", color="#e2e8f0", pad=20)
+            ax.set_xlabel("Longitude", color="#94a3b8")
+            ax.set_ylabel("Latitude", color="#94a3b8")
+            ax.tick_params(colors='#64748b')
+            ax.grid(True, alpha=0.15)
+            
+            for spine in ax.spines.values():
+                spine.set_edgecolor('#334155')
+            
+            st.pyplot(fig)
+            plt.close(fig)
+            
+        else:
+            # 📡 DATA-DRIVEN SCIENTIFIC PLOT
+            if ds is not None:
+                data_slice = ds[var].isel(time=t_idx)
+                
+                fig, ax = plt.subplots(figsize=(10, 6))
+                fig.patch.set_facecolor('none')
+                ax.set_facecolor('none')
+                
+                # Use xarray's native plotting wrapper for efficiency
+                data_slice.plot(ax=ax, cmap="hot", cbar_kwargs={'label': f"{var} ({units})"})
+                
+                # Styling for dark theme integration
+                ax.set_title(f"Scientific Heatmap: {var.replace('_',' ').title()}", color="#e2e8f0", pad=20)
+                ax.set_xlabel("Longitude", color="#94a3b8")
+                ax.set_ylabel("Latitude", color="#94a3b8")
+                ax.tick_params(colors='#64748b')
+                
+                # Fix colorbar colors if possible (xarray plot creates its own)
+                for item in fig.get_children():
+                    from matplotlib.colorbar import Colorbar
+                    if isinstance(item, Colorbar):
+                        item.ax.yaxis.set_tick_params(color="#94a3b8")
+                        plt.setp(plt.getp(item.ax.axes, 'yticklabels'), color='#94a3b8')
+                
+                for spine in ax.spines.values():
+                    spine.set_edgecolor('#334155')
+                
+                st.pyplot(fig)
+                plt.close(fig)
+            else:
+                st.info("System offline: Connect data to view scientific analysis.")
