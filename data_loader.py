@@ -18,12 +18,16 @@ class ClimateDataLoader:
             # We use chunks='auto' to enable out-of-core computation via dask.
             # We also enable use_cftime to handle non-standard calendars (e.g., noleap).
             ds = xr.open_dataset(filepath, chunks='auto', decode_times=True, use_cftime=True)
-            
-            # Normalize coordinate names (a common issue with scientific data)
             ds = ClimateDataLoader._normalize_coordinates(ds)
+            
+            # CRITICAL: Do not return empty datasets as it breaks the UI
+            if not list(ds.data_vars):
+                return None
+                
             return ds
-        except Exception as e:
-            raise RuntimeError(f"Failed to parse NetCDF file: {e}")
+        except Exception:
+            # Handle cases where the file is corrupted or not a valid NetCDF
+            return None
 
     @staticmethod
     def _normalize_coordinates(ds: xr.Dataset) -> xr.Dataset:
