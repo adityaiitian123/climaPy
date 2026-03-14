@@ -157,55 +157,104 @@ tab_map, tab_ts, tab_globe, tab_zones, tab_anomaly, tab_seasonal, tab_clim, tab_
 ])
 
 with tab_map:
-    render_map_view(ds, controls)
+    if controls.get("variable"):
+        render_map_view(ds, controls)
+    else:
+        st.info("🛰️ Heatmap requires an active data variable.")
 
 with tab_ts:
-    render_time_series_view(ds, controls)
+    if controls.get("variable"):
+        render_time_series_view(ds, controls)
+    else:
+        st.info("📈 Time Series requires an active data variable.")
 
 with tab_globe:
-    render_3d_globe(ds, controls)
+    if controls.get("variable"):
+        render_3d_globe(ds, controls)
+    else:
+        st.info("🌍 3D Globe requires an active data variable.")
+
 
 with tab_zones:
-    render_climate_zones(ds, controls)
+    if controls.get("variable"):
+        render_climate_zones(ds, controls)
+    else:
+        st.info("🌍 Climate Zones require an active data variable.")
 
 with tab_anomaly:
-    render_anomaly_pulse(ds, controls)
+    if controls.get("variable"):
+        render_anomaly_pulse(ds, controls)
+    else:
+        st.info("📈 Anomaly analysis requires an active data variable.")
 
 with tab_seasonal:
-    render_seasonal_analysis(ds, controls)
+    if controls.get("variable"):
+        render_seasonal_analysis(ds, controls)
+    else:
+        st.info("🍂 Seasonal analysis requires an active data variable.")
 
 with tab_clim:
-    render_climatology(ds, controls)
+    if controls.get("variable"):
+        render_climatology(ds, controls)
+    else:
+        st.info("🌡️ Climatology requires an active data variable.")
 
 with tab_sst:
-    render_sst_pulse(ds, controls)
+    if controls.get("variable"):
+        render_sst_pulse(ds, controls)
+    else:
+        st.info("🍝 SST analysis requires an active data variable.")
 
 with tab_ice:
-    render_cryosphere(ds, controls)
+    if controls.get("variable"):
+        render_cryosphere(ds, controls)
+    else:
+        st.info("❄️ Cryosphere analysis requires an active data variable.")
 
 with tab_ridge:
-    render_ridgeline_analytics(ds, controls)
+    if controls.get("variable"):
+        render_ridgeline_analytics(ds, controls)
+    else:
+        st.info("📈 Ridgeline analysis requires an active data variable.")
 
 with tab_comp:
-    render_comparison_view(ds, controls)
+    if controls.get("variable"):
+        render_comparison_view(ds, controls)
+    else:
+        st.info("⚖️ Comparison requires an active data variable.")
+
 
 
 
 with tab_scifi:
-    render_scifi_analyst(ds, controls)
+    if controls.get("variable"):
+        render_scifi_analyst(ds, controls)
+    else:
+        st.info("🤖 AI analysis requires an active data variable.")
 
 with tab_power:
-    render_power_analytics(ds, controls)
+    if controls.get("variable"):
+        render_power_analytics(ds, controls)
+    else:
+        st.info("📊 Power BI analysis requires an active data variable.")
+
 
 with tab_research:
-    render_research_analyst(ds, controls, ai_client=st.session_state.get('groq_client'))
+    if controls.get("variable"):
+        render_research_analyst(ds, controls, ai_client=st.session_state.get('groq_client'))
+    else:
+        st.info("🕵️ Research analyst requires an active data variable.")
 
 with tab_acquisition:
     render_data_acquisition_view()
 
 with tab_story:
     # Scientific Intelligence narrative stream
-    render_story_mode(ds, controls)
+    if controls.get("variable"):
+        render_story_mode(ds, controls)
+    else:
+        st.info("📖 Story mode requires an active data variable.")
+
 
 # ─── FOOTER ───────────────────────────────────────────────────────────────────
 st.markdown("""
