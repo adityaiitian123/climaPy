@@ -36,11 +36,9 @@ class InteractiveAtlasRenderer:
                 colorscale=colorscale,
                 reversescale=False,
                 colorbar=dict(
-                    title=units,
-                    titleside="right",
+                    title=dict(text=units),
                     thickness=20,
                     len=0.6,
-                    bgcolor="rgba(15,23,42,0.8)",
                     tickfont=dict(color="#f1f5f9", size=10)
                 ),
                 opacity=0.9, # More opaque
