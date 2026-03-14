@@ -23,7 +23,26 @@ from frontend.pages.map_view import render_map_view
 from frontend.pages.time_series import render_time_series_view
 from frontend.pages.comparison import render_comparison_view
 from frontend.pages.story_mode import render_story_mode
-from frontend.pages.globe_3d import render_3d_globe
+# from frontend.pages.globe_3d import render_3d_globe
+def render_3d_globe(ds, controls):
+    import pandas as pd
+    from backend.climate_processor import ClimateProcessor
+    var, t_idx, units = controls["variable"], controls["time_index"], controls["units"]
+    df_3d = ClimateProcessor.get_spatial_slice(ds, var, t_idx)
+    if df_3d.empty: return st.warning("No data for 3D projection.")
+    df_3d = df_3d.dropna(subset=[var]).rename(columns={var: 'val'})
+    
+    # 🛸 INDESTRUCTIBLE DICTIONARY BYPASS
+    fig_dict = {
+        "data": [{"type": "scattergeo", "lat": df_3d['lat'].tolist(), "lon": df_3d['lon'].tolist(), "mode": "markers",
+                  "marker": {"size": 3, "color": "#38bdf8", "opacity": 0.8, "showscale": False},
+                  "hoverinfo": "text", "text": df_3d['val'].apply(lambda x: f"{x:.2f} {units}").tolist()}],
+        "layout": {"title": {"text": f"Planetary Intelligence: {var}", "font": {"color": "#e2e8f0"}},
+                   "paper_bgcolor": "rgba(0,0,0,0)", "plot_bgcolor": "rgba(0,0,0,0)", "margin": {"t": 40, "b": 0, "l": 0, "r": 0},
+                   "geo": {"projection": {"type": "orthographic"}, "showland": True, "landcolor": "#1e293b",
+                           "showocean": True, "oceancolor": "#0f172a", "bgcolor": "rgba(0,0,0,0)"}, "height": 600}
+    }
+    st.plotly_chart(fig_dict, use_container_width=True)
 from frontend.pages.scifi_analyst import render_scifi_analyst
 from frontend.pages.power_analytics import render_power_analytics
 from frontend.pages.research_analyst import render_research_analyst
