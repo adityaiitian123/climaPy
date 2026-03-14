@@ -91,6 +91,16 @@ DATA_PATH_V2 = "data/nasa_merra2_proof_new.nc"
 DATA_PATH_V1 = "data/nasa_merra2_proof.nc"
 DATA_PATH = DATA_PATH_V2 if os.path.exists(DATA_PATH_V2) else DATA_PATH_V1
 
+# 🚀 SELF-HEALING: If no data exists, generate it automatically
+if not os.path.exists(DATA_PATH) and uploaded_file is None:
+    try:
+        from backend.generate_nasa_proof import generate_nasa_merra2_proof
+        generate_nasa_merra2_proof()
+        # Refresh path
+        DATA_PATH = DATA_PATH_V2 if os.path.exists(DATA_PATH_V2) else DATA_PATH_V1
+    except Exception as e:
+        st.error(f"Failed to auto-initialize data pipeline: {e}")
+
 if uploaded_file is not None:
     import tempfile
     suffix = os.path.splitext(uploaded_file.name)[-1] or ".nc"
