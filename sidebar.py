@@ -72,11 +72,29 @@ def render_sidebar(ds, metadata):
 
     # === Variable Selector ===
     st.sidebar.markdown('<div class="sidebar-section-header">🎛 Observation Metric</div>', unsafe_allow_html=True)
-    variables = metadata["variables"]
-    friendly_names = {v: metadata["var_info"][v]["long_name"] for v in variables}
-    selected_var = st.sidebar.selectbox("", variables, format_func=lambda x: friendly_names[x], label_visibility="collapsed")
+    variables = metadata.get("variables", [])
+    
+    if not variables:
+        st.sidebar.error("❌ No data variables found in dataset.")
+        st.sidebar.info("Please ensure your NetCDF file contains observational data.")
+        controls["variable"] = None
+        controls["units"] = "N/A"
+        return controls
+
+    var_info = metadata.get("var_info", {})
+    # Use .get() and fallbacks to prevent KeyError
+    friendly_names = {v: var_info.get(v, {}).get("long_name", v) for v in variables}
+    
+    selected_var = st.sidebar.selectbox(
+        "Select Metric", 
+        variables, 
+        index=0,
+        format_func=lambda x: friendly_names.get(x, x), 
+        label_visibility="collapsed"
+    )
+    
     controls["variable"] = selected_var
-    controls["units"]    = metadata["var_info"][selected_var]["units"]
+    controls["units"]    = var_info.get(selected_var, {}).get("units", "unknown units")
 
     st.sidebar.markdown("<div style='height:0.8rem'></div>", unsafe_allow_html=True)
 
