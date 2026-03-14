@@ -83,7 +83,7 @@ st.markdown("""
                 </span>
             </div>
             <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
-                <span class="app-badge">3D Globe</span>
+                <span class="app-badge">Elite Science Platform</span>
                 <span class="app-badge" style="background:rgba(14,165,233,0.15); border:1px solid #38bdf8; color:#38bdf8; font-weight:700;">
                     🛡️ NASA MERRA-2 VERIFIED
                 </span>
@@ -98,6 +98,47 @@ st.markdown("""
         </div>
     </div>
 </div>
+
+<style>
+/* 🌟 ULTIMATE PULSE GLOW FOR FIRST TAB 🌟 */
+[data-testid="stTopBar"] {
+    background: transparent !important;
+}
+
+div[data-testid="stHorizontalBlock"] > div:nth-child(1) button[data-baseweb="tab"]:nth-child(1),
+div[class*="st-key-main_tabs"] button[id*="tabs-bndl-0"] {
+    position: relative;
+    border-bottom: 2px solid #38bdf8 !important;
+    animation: cyan-pulse 2s infinite !important;
+    color: #38bdf8 !important;
+    font-weight: 800 !important;
+}
+
+@keyframes cyan-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); border-color: rgba(56, 189, 248, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); border-color: rgba(56, 189, 248, 1); }
+    100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); border-color: rgba(56, 189, 248, 0.4); }
+}
+
+/* Ensure tabs are centered and clear */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2rem;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 12px;
+    padding: 0.5rem;
+    border: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    background-color: transparent !important;
+    border: none !important;
+    font-size: 1rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+</style>
 """, unsafe_allow_html=True)
 
 
@@ -204,23 +245,12 @@ else:
 st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
 # ─── CORE TAB PANEL ───────────────────────────────────────────────────────────
-tab_map, tab_ts, tab_globe, tab_zones, tab_anomaly, tab_seasonal, tab_clim, tab_sst, tab_ice, tab_ridge, tab_comp, tab_scifi, tab_power, tab_research, tab_acquisition, tab_story = st.tabs([
-    "🛰️ Spatial Heatmap", 
-    "📈 Time Series", 
-    "🌍 3D Globe",
-    "🌍 Climate Zones",
-    "📈 Anomaly Pulse",
-    "🍂 Seasonal Pulse",
-    "🌡️ Climatology",
-    "🍝 SST Pulse",
-    "❄️ Cryosphere",
-    "📈 Ridgeline Pulse",
-    "⚖️ Comparison",
-    "🤖 Scifi Analyst",
-    "📊 Power BI Suite",
-    "🕵️ Research Analyst",
-    "📡 Data Acquisition",
-    "📖 Story Mode"
+tab_map, tab_trend, tab_ai, tab_sphere, tab_diag = st.tabs([
+    "🛰️ Spatial Heat-Map", 
+    "📈 Time Series Graph", 
+    "🧠 AI Analyst",
+    "🌍 3D sphere",
+    "🔬 Advanced Diagnostics"
 ])
 
 with tab_map:
@@ -229,98 +259,64 @@ with tab_map:
     else:
         st.info("🛰️ Heatmap requires an active data variable.")
 
-with tab_ts:
+with tab_trend:
     if controls.get("variable"):
         render_time_series_view(ds, controls)
     else:
         st.info("📈 Time Series requires an active data variable.")
 
-with tab_globe:
+with tab_ai:
+    ai_sub = st.radio("AI Intelligence Systems", ["Scifi Oracle", "Deep Research", "Power BI Analytics"], horizontal=True)
+    if controls.get("variable"):
+        if ai_sub == "Scifi Oracle":
+            render_scifi_analyst(ds, controls)
+        elif ai_sub == "Deep Research":
+            render_research_analyst(ds, controls, ai_client=st.session_state.get('groq_client'))
+        else:
+            render_power_analytics(ds, controls)
+    else:
+        st.info("🤖 AI analysis requires an active data variable.")
+
+with tab_sphere:
     if controls.get("variable"):
         render_3d_globe(ds, controls)
     else:
         st.info("🌍 3D Globe requires an active data variable.")
 
-
-with tab_zones:
-    if controls.get("variable"):
-        render_climate_zones(ds, controls)
-    else:
-        st.info("🌍 Climate Zones require an active data variable.")
-
-with tab_anomaly:
-    if controls.get("variable"):
-        render_anomaly_pulse(ds, controls)
-    else:
-        st.info("📈 Anomaly analysis requires an active data variable.")
-
-with tab_seasonal:
-    if controls.get("variable"):
-        render_seasonal_analysis(ds, controls)
-    else:
-        st.info("🍂 Seasonal analysis requires an active data variable.")
-
-with tab_clim:
-    if controls.get("variable"):
-        render_climatology(ds, controls)
-    else:
-        st.info("🌡️ Climatology requires an active data variable.")
-
-with tab_sst:
-    if controls.get("variable"):
-        render_sst_pulse(ds, controls)
-    else:
-        st.info("🍝 SST analysis requires an active data variable.")
-
-with tab_ice:
-    if controls.get("variable"):
-        render_cryosphere(ds, controls)
-    else:
-        st.info("❄️ Cryosphere analysis requires an active data variable.")
-
-with tab_ridge:
-    if controls.get("variable"):
-        render_ridgeline_analytics(ds, controls)
-    else:
-        st.info("📈 Ridgeline analysis requires an active data variable.")
-
-with tab_comp:
-    if controls.get("variable"):
-        render_comparison_view(ds, controls)
-    else:
-        st.info("⚖️ Comparison requires an active data variable.")
-
-
-
-
-with tab_scifi:
-    if controls.get("variable"):
-        render_scifi_analyst(ds, controls)
-    else:
-        st.info("🤖 AI analysis requires an active data variable.")
-
-with tab_power:
-    if controls.get("variable"):
-        render_power_analytics(ds, controls)
-    else:
-        st.info("📊 Power BI analysis requires an active data variable.")
-
-
-with tab_research:
-    if controls.get("variable"):
-        render_research_analyst(ds, controls, ai_client=st.session_state.get('groq_client'))
-    else:
-        st.info("🕵️ Research analyst requires an active data variable.")
-
-with tab_acquisition:
-    render_data_acquisition_view()
-
-with tab_story:
-    # Scientific Intelligence narrative stream
-    if controls.get("variable"):
-        render_story_mode(ds, controls)
-    else:
-        st.info("📖 Story mode requires an active data variable.")
+with tab_diag:
+    st.markdown("""
+    <div style='background:rgba(56,189,248,0.05); padding:1rem; border-radius:8px; border-left:4px solid #38bdf8; margin-bottom:1.5rem;'>
+        <h4 style='margin:0; font-size:1rem;'>Scientific Deep-Dive</h4>
+        <p style='margin:0; font-size:0.8rem; color:#94a3b8;'>Access specialized climate diagnostics and technical modules.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    diag_mode = st.selectbox("Select Diagnostic Protocol", [
+        "Anomaly Pulse", "Climate Zones", "Seasonal Pulse", "Climatology", 
+        "SST Pulse", "Cryosphere", "Ridgeline Pulse", "Comparison", 
+        "Data Acquisition", "Story Mode"
+    ])
+    
+    if diag_mode == "Anomaly Pulse":
+        render_anomaly_pulse(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Climate Zones":
+        render_climate_zones(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Seasonal Pulse":
+        render_seasonal_analysis(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Climatology":
+        render_climatology(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "SST Pulse":
+        render_sst_pulse(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Cryosphere":
+        render_cryosphere(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Ridgeline Pulse":
+        render_ridgeline_analytics(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Comparison":
+        render_comparison_view(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+    elif diag_mode == "Data Acquisition":
+        render_data_acquisition_view()
+    elif diag_mode == "Story Mode":
+        render_story_mode(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
 
 
 # ─── FOOTER ───────────────────────────────────────────────────────────────────
