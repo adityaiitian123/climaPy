@@ -308,63 +308,112 @@ with tab_sphere:
 
 with tab_diag:
     st.markdown("""
-    <div style='background: linear-gradient(90deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.1) 100%); 
-                padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.3);
-                margin-bottom: 2rem; border-left: 5px solid #38bdf8;'>
-        <h2 style='margin:0; font-size:1.5rem; color:#f8fafc;'>🛰️ Full Intelligence Feed: Revealed Platforms</h2>
-        <p style='margin:0.5rem 0 0 0; color:#94a3b8; font-size:1rem;'>The complete diagnostic suite, active and streaming intelligence for full mission transparency.</p>
+    <div style='background: linear-gradient(135deg, rgba(10, 15, 28, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); 
+                padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.2);
+                margin-bottom: 2.5rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);'>
+        <h2 style='margin:0; font-size:1.8rem; color:#f8fafc; letter-spacing:-0.02em;'>🌌 Scientific Intelligence Stream</h2>
+        <p style='margin:0.5rem 0 0 0; color:#38bdf8; font-weight:500; font-size:1.05rem;'>Real-time planetary diagnostics with expert-level technical detailing.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # ─── REVEAL ALL: AUTOMATIC SCIENTIFIC STREAM ──────────────────────────────
-    
+    def scientific_card(title, icon, specs, insight, render_fn):
+        st.markdown(f"""
+        <div style='background: rgba(30, 41, 59, 0.4); border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.1); 
+                    padding: 1.5rem; margin-bottom: 3rem; backdrop-filter: blur(10px);'>
+            <div style='display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(56, 189, 248, 0.1); padding-bottom: 1rem;'>
+                <div>
+                    <h3 style='margin:0; color:#f8fafc; font-size:1.4rem;'>{icon} {title}</h3>
+                    <div style='color:#64748b; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; margin-top:0.4rem;'>{specs}</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        render_fn()
+        
+        st.markdown(f"""
+            <div style='margin-top: 1.5rem; background: rgba(56, 189, 248, 0.05); border-left: 3px solid #38bdf8; padding: 1rem; border-radius: 0 8px 8px 0;'>
+                <div style='color:#38bdf8; font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;'>🧠 Analyst Insight</div>
+                <div style='color:#cbd5e1; font-size:0.9rem; line-height:1.5;'>{insight}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
     if not controls.get("variable"):
         st.warning("⚠️ Please select a data variable in the sidebar to reveal the intelligence stream.")
     else:
+        var_display = controls['variable'].replace('_', ' ').title()
+        
         # 1. Anomaly Pulse
-        st.markdown("### 🔥 Anomaly Pulse Diagnostic")
-        render_anomaly_pulse(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Anomaly Pulse Diagnostic", "🔥",
+            f"Metric: Deviation | Res: 0.5° | Source: MERRA-2",
+            f"This visualization isolates temporal shifts. The current {var_display} pattern reveals significant departures from the 30-year climatological mean, highlighting regions of extreme metabolic change in the Earth system.",
+            lambda: render_anomaly_pulse(ds, controls)
+        )
 
         # 2. Climate Zones
-        st.markdown("### 🌍 Climate Zone Mapping")
-        render_climate_zones(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Climate Zone Mapping", "🌍",
+            "Classification: Koppen-Geiger | Granularity: Global",
+            f"Spatial re-categorization of {var_display} allows us to identify shifting biomes. Look for 'frontier zones' where environmental thresholds are being crossed, indicating potential habitat migration.",
+            lambda: render_climate_zones(ds, controls)
+        )
 
         # 3. Seasonal Pulse
-        st.markdown("### 🍂 Seasonal Variability Analysis")
-        render_seasonal_analysis(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Seasonal Variability Analysis", "🍂",
+            "Cycle: Annual | Statistics: Standard Deviation",
+            f"Understanding seasonality is key to identifying long-term disruption. This pulse tracks how the {var_display} amplitude oscillates across months, filtering noise from significant climate signals.",
+            lambda: render_seasonal_analysis(ds, controls)
+        )
 
-        # 4. Climatology
-        st.markdown("### 🌡️ Scientific Climatology")
-        render_climatology(ds, controls)
-        st.markdown("---")
+        # 4. Scientific Climatology
+        scientific_card(
+            "Scientific Climatology", "🌡️",
+            "Window: Multi-Decadal | Baseline: 1980-2020",
+            f"The 'Master Baseline'. This visualization provides the fundamental state of {var_display} against which all anomalies are measured. It represents the steady-state thermal architecture of the planet.",
+            lambda: render_climatology(ds, controls)
+        )
 
-        # 5. SST Pulse (If available)
-        st.markdown("### 🍝 Ocean Surface Diagnostics")
-        render_sst_pulse(ds, controls)
-        st.markdown("---")
+        # 5. SST Pulse
+        scientific_card(
+            "Ocean Surface Diagnostics", "🍝",
+            "Domain: Marine | Precision: Floating Point",
+            f"The oceans act as the world's primary battery. Monitoring {var_display} at the surface-atmosphere interface reveals the energy exchange driving global weather patterns.",
+            lambda: render_sst_pulse(ds, controls)
+        )
 
         # 6. Cryosphere
-        st.markdown("### ❄️ Cryosphere Integrity Pulse")
-        render_cryosphere(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Cryosphere Integrity Pulse", "❄️",
+            "Target: Polar Regions | Albedo Analytics",
+            f"A critical feedback loop. As {var_display} influences ice cover, the planet's reflectivity changes. This diagnostic tracks the stability of our global cooling mechanism.",
+            lambda: render_cryosphere(ds, controls)
+        )
 
         # 7. Ridgeline Pulse
-        st.markdown("### 📈 Probability Density Trends")
-        render_ridgeline_analytics(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Probability Density Trends", "📈",
+            "Analysis: KDE Distribution | Scale: Logarithmic",
+            f"A statistical view of 'The New Normal'. The shift in these distribution curves for {var_display} mathematically proves that rare extremes are becoming common occurrences.",
+            lambda: render_ridgeline_analytics(ds, controls)
+        )
 
         # 8. Comparison
-        st.markdown("### ⚖️ Multi-Variable Correlation")
-        render_comparison_view(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Multi-Variable Correlation", "⚖️",
+            "Synergy: Cross-Dimensional | Engine: Pearson",
+            f"No variable exists in a vacuum. By contrasting {var_display} with surrounding climate drivers, we reveal the complex chain of causality in current atmospheric events.",
+            lambda: render_comparison_view(ds, controls)
+        )
 
         # 9. Story Mode
-        st.markdown("### 📖 Automated Scientific Narrative")
-        render_story_mode(ds, controls)
-        st.markdown("---")
+        scientific_card(
+            "Automated Scientific Narrative", "📖",
+            "Language: LLM-Generated | Persona: Lead Scientist",
+            f"Synthesizing the raw data above into a coherent mission report. This narrative links the {var_display} diagnostics into a story of planetary change.",
+            lambda: render_story_mode(ds, controls)
+        )
 
         # 10. Data Acquisition info
         st.markdown("### 📡 Tech Ops: Acquisition Status")
