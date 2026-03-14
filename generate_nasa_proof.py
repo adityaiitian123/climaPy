@@ -3,39 +3,30 @@ import numpy as np
 import pandas as pd
 import os
 
-def generate_nasa_merra2_proof():
+def generate_nasa_merra2_proof(out_path=None):
     """
     Generates a synthetic NetCDF file matching NASA MERRA-2 metadata standards.
     This serves as a 'Proof of Integration' for NASA datasets.
     """
     print("🚀 Initializing NASA MERRA-2 Proof Dataset Generation...")
     
-    # 1. Define Coordinates (MERRA-2 Grid: 0.5 x 0.625)
-    # Lat: 361 points (-90 to 90), Lon: 576 points (-180 to 179.375)
-    # For speed and storage in sandbox, we'll use a slightly coarser global grid but correct bounds
+    # ... (rest of coordinate generation stays same)
     lats = np.linspace(-90, 90, 180)
     lons = np.linspace(-180, 179, 360)
-    # 12 months for 2023
     times = pd.date_range("2023-01-01", periods=12, freq="MS")
-    
     shape = (len(times), len(lats), len(lons))
     
-    # 2. Generate Synthetic Data with Scientific Patterns
-    # Temperature (T2M) - Latitude gradient + seasonality
     t2m = np.zeros(shape)
     for t in range(len(times)):
         seasonal_shift = 15 * np.cos(2 * np.pi * t / 12)
         for i, lat in enumerate(lats):
-            # Thermal equator + noise
             t2m[t, i, :] = 280 + 20 * np.cos(np.deg2rad(lat)) + seasonal_shift + np.random.normal(0, 2, len(lons))
             
-    # Sea Level Pressure (SLP) - Higher at mid-latitudes (30N/S)
     slp = np.zeros(shape)
     for i, lat in enumerate(lats):
-        base_p = 101325 - 500 * np.cos(np.deg2rad(lat*3)) # Simplified ridges/troughs
+        base_p = 101325 - 500 * np.cos(np.deg2rad(lat*3))
         slp[:, i, :] = base_p + np.random.normal(0, 100, (len(times), len(lons)))
 
-    # 3. Create Xarray Dataset
     ds = xr.Dataset(
         data_vars={
             "T2M": (["time", "lat", "lon"], t2m.astype(np.float32), 
@@ -63,15 +54,21 @@ def generate_nasa_merra2_proof():
     )
 
     # 4. Save to disk
-    out_dir = "data"
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-        
-    out_path = os.path.join(out_dir, "nasa_merra2_proof.nc")
+    if out_path is None:
+        out_dir = "data"
+        if not os.path.exists(out_dir):
+            try:
+                os.makedirs(out_dir)
+            except OSError:
+                # Fallback handled in app.py if this fails
+                pass
+        out_path = os.path.join(out_dir, "nasa_merra2_proof.nc")
+    
     ds.to_netcdf(out_path)
     
     print(f"✅ NASA Proof Dataset stored successfully at: {out_path}")
-    print(f"📏 Size: ~{os.path.getsize(out_path)/(1024*1024):.2f} MB")
+    return out_path
+
 
 if __name__ == "__main__":
     generate_nasa_merra2_proof()

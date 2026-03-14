@@ -130,11 +130,22 @@ with st.spinner('🔄 Initializing Geospatial Intelligence Engine...'):
         # If no data found and user hasn't uploaded a file, FORCE generate NASA Intel proof
         if (not ds or not variables) and uploaded_file is None:
             from backend.generate_nasa_proof import generate_nasa_merra2_proof
-            generate_nasa_merra2_proof()
-            # Redirect to the newly generated file
-            DATA_PATH = "data/nasa_merra2_proof.nc" 
+            try:
+                # Try saving to standard 'data/' directory first (local dev)
+                generate_nasa_merra2_proof()
+                DATA_PATH = "data/nasa_merra2_proof.nc"
+            except (OSError, PermissionError):
+                # CLOUD FALLBACK: Use temporary directory if 'data/' is read-only
+                import tempfile
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".nc") as tmp:
+                    temp_path = tmp.name
+                generate_nasa_merra2_proof(out_path=temp_path)
+                DATA_PATH = temp_path
+
+            # Load the newly generated file
             ds = ClimateDataLoader.load_dataset(DATA_PATH)
             variables = list(ds.data_vars) if ds else []
+
 
         if ds:
             metadata = ClimateDataLoader.get_metadata_summary(ds)
