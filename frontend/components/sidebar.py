@@ -72,11 +72,49 @@ def render_sidebar(ds, metadata):
 
     # === Variable Selector ===
     st.sidebar.markdown('<div class="sidebar-section-header">🎛 Observation Metric</div>', unsafe_allow_html=True)
-    variables = metadata["variables"]
-    friendly_names = {v: metadata["var_info"][v]["long_name"] for v in variables}
-    selected_var = st.sidebar.selectbox("", variables, format_func=lambda x: friendly_names[x], label_visibility="collapsed")
+    variables = metadata.get("variables", [])
+    
+    if not variables:
+        st.sidebar.error("❌ No data variables found in dataset.")
+        st.sidebar.info("Please ensure your NetCDF file contains observational data.")
+        controls["variable"] = None
+        controls["units"] = "N/A"
+        return controls
+
+    var_info = metadata.get("var_info", {})
+    
+    # === Defensive Metric Detection ===
+    def get_safe_info(v):
+        """Ultra-robust way to get variable details from metadata or Dataset directly."""
+        # 1. Try metadata
+        info = var_info.get(v, {})
+        name = info.get("long_name")
+        units = info.get("units")
+        
+        # 2. Fallback to Dataset attributes directly (BYPASSES metadata errors)
+        if not name or not units:
+            try:
+                if v in ds.data_vars:
+                    attrs = ds[v].attrs
+                    name = name or attrs.get("long_name", v)
+                    units = units or attrs.get("units", "units")
+            except:
+                pass
+        
+        return name or v, units or "units"
+
+    friendly_names = {v: get_safe_info(v)[0] for v in variables}
+    
+    selected_var = st.sidebar.selectbox(
+        "Select Metric", 
+        variables, 
+        index=0,
+        format_func=lambda x: friendly_names.get(x, x), 
+        label_visibility="collapsed"
+    )
+    
     controls["variable"] = selected_var
-    controls["units"]    = metadata["var_info"][selected_var]["units"]
+    _, controls["units"] = get_safe_info(selected_var)
 
     st.sidebar.markdown("<div style='height:0.8rem'></div>", unsafe_allow_html=True)
 
@@ -125,14 +163,16 @@ def render_sidebar(ds, metadata):
 
     # === Variable Info ===
     with st.sidebar.expander("📊 Variable Details", expanded=False):
-        for v in metadata["variables"]:
-            info = metadata["var_info"][v]
+        for v in metadata.get("variables", []):
+            info = metadata.get("var_info", {}).get(v, {})
             selected_style = "background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);" if v == selected_var else ""
+            long_name = info.get('long_name', v)
+            units = info.get('units', 'N/A')
             st.markdown(f"""
             <div style="border:1px solid rgba(255,255,255,0.06);border-radius:8px;
                         padding:0.6rem 0.8rem;margin-bottom:0.4rem;{selected_style}">
-                <div style="font-weight:600;color:#e2e8f0;font-size:0.85rem;">{info['long_name']}</div>
-                <div style="color:#475569;font-size:0.75rem;">Units: <code style="color:#94a3b8">{info['units']}</code></div>
+                <div style="font-weight:600;color:#e2e8f0;font-size:0.85rem;">{long_name}</div>
+                <div style="color:#475569;font-size:0.75rem;">Units: <code style="color:#94a3b8">{units}</code></div>
             </div>
             """, unsafe_allow_html=True)
 
