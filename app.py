@@ -127,8 +127,12 @@ with st.spinner('🔄 Initializing Geospatial Intelligence Engine...'):
 controls = render_sidebar(ds, metadata)
 
 # ─── KPI RIBBON + INSIGHTS ────────────────────────────────────────────────────
-render_kpi_cards(ds, controls)
-render_insight_panel(ds, controls, ai_client=st.session_state.get('groq_client'))
+if controls.get("variable"):
+    render_kpi_cards(ds, controls)
+    render_insight_panel(ds, controls, ai_client=st.session_state.get('groq_client'))
+else:
+    st.warning("📊 No analysis possible: Please select a variable from the sidebar.")
+
 
 st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
