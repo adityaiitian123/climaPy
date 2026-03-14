@@ -54,8 +54,47 @@ def render_3d_globe(ds, controls):
         df_3d['val_abs'] = df_3d['val'].abs()
 
         if "Plotly" in view_mode:
-            from frontend.components.atlas_renderer import InteractiveAtlasRenderer
-            InteractiveAtlasRenderer.render_interactive_atlas(df_3d, 'val', units, title=f"Planetary Intelligence: {var.replace('_',' ').title()}")
+            # ☢️ SURVIVAL MODE: Inlined dictionary-based bypass
+            # This avoids ALL Plotly object constructors and validation bugs in Python 3.14
+            fig_dict = {
+                "data": [{
+                    "type": "scattergeo",
+                    "lat": df_3d['lat'].tolist(),
+                    "lon": df_3d['lon'].tolist(),
+                    "mode": "markers",
+                    "marker": {
+                        "size": 3,
+                        "color": "#38bdf8",
+                        "opacity": 0.8,
+                        "showscale": False
+                    },
+                    "hoverinfo": "text",
+                    "text": df_3d['val'].apply(lambda x: f"{x:.2f} {units}").tolist()
+                }],
+                "layout": {
+                    "title": {"text": f"Planetary Intelligence: {var.replace('_',' ').title()}", "font": {"color": "#e2e8f0"}},
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)",
+                    "margin": {"t": 40, "b": 0, "l": 0, "r": 0},
+                    "geo": {
+                        "projection": {"type": "orthographic"},
+                        "showland": True,
+                        "landcolor": "#1e293b",
+                        "showcoastlines": True,
+                        "coastlinecolor": "#334155",
+                        "showocean": True,
+                        "oceancolor": "#0f172a",
+                        "bgcolor": "rgba(0,0,0,0)",
+                        "showcountries": True,
+                        "countrycolor": "#334155"
+                    },
+                    "height": 600
+                }
+            }
+            try:
+                st.plotly_chart(fig_dict, use_container_width=True)
+            except Exception as e:
+                st.info(f"💡 Visualizer in Survival Mode: {e}")
         else:
             # ─── PYDECK GLOBE IMPLEMENTATION ──────────────────────────────────────
             avg_lat = float(df_3d['lat'].mean())
