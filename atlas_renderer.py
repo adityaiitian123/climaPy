@@ -25,23 +25,23 @@ class InteractiveAtlasRenderer:
         is_anomaly = "anomaly" in var.lower() or "change" in var.lower()
         colorscale = "RdBu_r" if is_anomaly else "Turbo"
 
+        # "SAFE MODE" RENDERING ENGINE
         try:
+            # Minimalist rendering to prevent validation crashes
             fig.add_trace(go.Scattergeo(
                 lat=df_plot['lat'],
                 lon=df_plot['lon'],
                 mode="markers",
                 marker=dict(
-                    size=4,
-                    color=df_plot[var],
-                    colorscale=colorscale,
-                    showscale=False # Disable scale to bypass ColorBar validation error
+                    size=3,
+                    color='#38bdf8', # Fixed color to bypass scale logic
+                    opacity=0.8
                 ),
                 hoverinfo="text",
                 text=df_plot[var].apply(lambda x: f"{x:.2f} {units}")
             ))
-        except Exception:
-            # If Scattergeo itself fails, provide a minimal fallback
-            st.info("💡 Synchronizing Planetary Models...")
+        except Exception as e:
+            st.info(f"💡 Visualizer in Safe Mode: {e}")
             return
 
         # Auto-center based on data
