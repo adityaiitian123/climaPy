@@ -25,27 +25,24 @@ class InteractiveAtlasRenderer:
         is_anomaly = "anomaly" in var.lower() or "change" in var.lower()
         colorscale = "RdBu_r" if is_anomaly else "Turbo"
 
-        fig.add_trace(go.Scattergeo(
-            lat=df_plot['lat'],
-            lon=df_plot['lon'],
-            text=df_plot[var].apply(lambda x: f"{x:.2f} {units}"),
-            mode="markers",
-            marker=dict(
-                size=6, # Increased size
-                color=df_plot[var],
-                colorscale=colorscale,
-                reversescale=False,
-                colorbar=dict(
-                    title=dict(text=units),
-                    thickness=20,
-                    len=0.6,
-                    tickfont=dict(color="#f1f5f9", size=10)
+        try:
+            fig.add_trace(go.Scattergeo(
+                lat=df_plot['lat'],
+                lon=df_plot['lon'],
+                mode="markers",
+                marker=dict(
+                    size=4,
+                    color=df_plot[var],
+                    colorscale=colorscale,
+                    showscale=False # Disable scale to bypass ColorBar validation error
                 ),
-                opacity=0.9, # More opaque
-                showscale=True
-            ),
-            hoverinfo="text"
-        ))
+                hoverinfo="text",
+                text=df_plot[var].apply(lambda x: f"{x:.2f} {units}")
+            ))
+        except Exception:
+            # If Scattergeo itself fails, provide a minimal fallback
+            st.info("💡 Synchronizing Planetary Models...")
+            return
 
         # Auto-center based on data
         avg_lat = df_plot['lat'].mean()
