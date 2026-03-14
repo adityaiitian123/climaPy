@@ -100,66 +100,104 @@ st.markdown("""
 </div>
 
 <style>
-/* 🚀 STEADY-NEON PREMIUM TABS (High-Aesthetic, No Spinning) 🚀 */
+/* 🚀 ULTRA-PREMIUM AESTHETIC TABS 🚀 */
 [data-testid="stTopBar"] {
     background: transparent !important;
 }
 
-/* Base Tab Styling */
+/* Base Tab List Container - Floating Glassmorphism Pill */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 1.5rem;
+    gap: 12px;
     justify-content: center;
-    background: rgba(10, 15, 28, 0.8) !important;
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 10px 20px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    margin-bottom: 2rem;
-}
-
-/* Individual Tab Button styling */
-.stTabs [data-baseweb="tab"] {
-    height: 54px;
-    background: transparent !important;
-    border: none !important;
-    color: #64748b !important;
-    font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.08em;
-    padding: 0 1.5rem !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    position: relative;
-    border-radius: 12px;
-}
-
-/* Active Tab - Elegant Steady Neon 🌟 */
-[data-baseweb="tab"][aria-selected="true"] {
-    color: #f8fafc !important;
-    background: rgba(56, 189, 248, 0.1) !important;
-    border: 1px solid #38bdf8 !important;
+    background: rgba(15, 23, 42, 0.55) !important;
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border-radius: 24px;
+    padding: 10px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 
-        0 0 15px rgba(56, 189, 248, 0.4),
-        inset 0 0 10px rgba(56, 189, 248, 0.2) !important;
-    transform: translateY(-2px);
-    animation: neon-breathing 3s ease-in-out infinite;
+        0 25px 50px -12px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    margin: 1.5rem auto 3.5rem auto !important;
+    width: fit-content;
+    position: relative;
+    z-index: 10;
 }
 
-@keyframes neon-breathing {
-    0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.8); }
-    50% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 1); }
+/* Hide the default underline highlight */
+.stTabs [data-baseweb="tab-highlight"] {
+    display: none !important;
 }
 
-/* Hover State */
+/* Individual Tab Button styling - Smooth & Subtle */
+.stTabs [data-baseweb="tab"] {
+    height: 52px;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: #64748b !important;
+    font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.04em;
+    padding: 0 28px !important;
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover State for inactive tabs - Soft luminous glow */
 .stTabs [data-baseweb="tab"]:hover:not([aria-selected="true"]) {
-    color: #38bdf8 !important;
-    background: rgba(56, 189, 248, 0.05) !important;
-    border-bottom: 2px solid rgba(56, 189, 248, 0.5) !important;
+    color: #e2e8f0 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-/* First Tab specific emphasis */
-div[data-testid="stHorizontalBlock"] > div:nth-child(1) button[data-baseweb="tab"]:nth-child(1):not([aria-selected="true"]) {
-    background: rgba(56, 189, 248, 0.03) !important;
+/* Active Tab - Futuristic Liquid Gradient & Deep Glow */
+[data-baseweb="tab"][aria-selected="true"] {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(129, 140, 248, 0.25) 100%) !important;
+    border: 1px solid rgba(56, 189, 248, 0.6) !important;
+    box-shadow: 
+        0 8px 25px rgba(56, 189, 248, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        inset 0 -10px 20px rgba(129, 140, 248, 0.1) !important;
+    transform: translateY(-3px);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Active Tab pseudo-element for liquid sweeping effect */
+[data-baseweb="tab"][aria-selected="true"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; right: 0; bottom: 0;
+    width: 200%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.15) 50%, 
+        transparent 100%);
+    animation: liquid-sweep 3s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes liquid-sweep {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(50%); }
+}
+
+/* Remove default Streamlit outline on focus */
+.stTabs [data-baseweb="tab"]:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+[data-baseweb="tab"][aria-selected="true"]:focus {
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
 }
 </style>
 """, unsafe_allow_html=True)
