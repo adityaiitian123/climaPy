@@ -100,43 +100,66 @@ st.markdown("""
 </div>
 
 <style>
-/* 🌟 ULTIMATE PULSE GLOW FOR FIRST TAB 🌟 */
+/* 🚀 STEADY-NEON PREMIUM TABS (High-Aesthetic, No Spinning) 🚀 */
 [data-testid="stTopBar"] {
     background: transparent !important;
 }
 
-div[data-testid="stHorizontalBlock"] > div:nth-child(1) button[data-baseweb="tab"]:nth-child(1),
-div[class*="st-key-main_tabs"] button[id*="tabs-bndl-0"] {
-    position: relative;
-    border-bottom: 2px solid #38bdf8 !important;
-    animation: cyan-pulse 2s infinite !important;
-    color: #38bdf8 !important;
-    font-weight: 800 !important;
-}
-
-@keyframes cyan-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); border-color: rgba(56, 189, 248, 0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); border-color: rgba(56, 189, 248, 1); }
-    100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); border-color: rgba(56, 189, 248, 0.4); }
-}
-
-/* Ensure tabs are centered and clear */
+/* Base Tab Styling */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 2rem;
+    gap: 1.5rem;
     justify-content: center;
-    background: rgba(15, 23, 42, 0.4);
-    border-radius: 12px;
-    padding: 0.5rem;
-    border: 1px solid rgba(56, 189, 248, 0.1);
+    background: rgba(10, 15, 28, 0.8) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 10px 20px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    margin-bottom: 2rem;
 }
 
+/* Individual Tab Button styling */
 .stTabs [data-baseweb="tab"] {
-    height: 50px;
-    background-color: transparent !important;
+    height: 54px;
+    background: transparent !important;
     border: none !important;
-    font-size: 1rem !important;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: #64748b !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.08em;
+    padding: 0 1.5rem !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    border-radius: 12px;
+}
+
+/* Active Tab - Elegant Steady Neon 🌟 */
+[data-baseweb="tab"][aria-selected="true"] {
+    color: #f8fafc !important;
+    background: rgba(56, 189, 248, 0.1) !important;
+    border: 1px solid #38bdf8 !important;
+    box-shadow: 
+        0 0 15px rgba(56, 189, 248, 0.4),
+        inset 0 0 10px rgba(56, 189, 248, 0.2) !important;
+    transform: translateY(-2px);
+    animation: neon-breathing 3s ease-in-out infinite;
+}
+
+@keyframes neon-breathing {
+    0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.8); }
+    50% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.3); border-color: rgba(56, 189, 248, 1); }
+}
+
+/* Hover State */
+.stTabs [data-baseweb="tab"]:hover:not([aria-selected="true"]) {
+    color: #38bdf8 !important;
+    background: rgba(56, 189, 248, 0.05) !important;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.5) !important;
+}
+
+/* First Tab specific emphasis */
+div[data-testid="stHorizontalBlock"] > div:nth-child(1) button[data-baseweb="tab"]:nth-child(1):not([aria-selected="true"]) {
+    background: rgba(56, 189, 248, 0.03) !important;
 }
 </style>
 """, unsafe_allow_html=True)
