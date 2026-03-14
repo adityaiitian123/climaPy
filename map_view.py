@@ -20,6 +20,25 @@ def render_map_view(ds, controls):
             <h3 style="margin:0; font-size:1.25rem;">Command Intelligence: {var.replace('_',' ').title()}</h3>
         </div>
         """, unsafe_allow_html=True)
+    # Aesthetic "Magic" Call-to-Action
+    st.markdown("""
+    <div style='background: linear-gradient(90deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.1) 100%); 
+                padding: 0.8rem 1.2rem; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3);
+                margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.8rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); animation: magic-pop 2s ease-in-out infinite;'>
+        <span style='font-size: 1.2rem;'>✨</span>
+        <span style='color: #38bdf8; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.03em;'>
+             Selection Alert: <span style='color: #f8fafc;'>Click '2D Heatmap' to see scientific magic!</span>
+        </span>
+    </div>
+    <style>
+    @keyframes magic-pop {
+        0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); }
+        50% { transform: scale(1.02); box-shadow: 0 8px 30px rgba(56, 189, 248, 0.2); }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     with col_t2:
         view_mode = st.radio("View Mode", ["3D Intelligence", "2D Heatmap"], index=1, horizontal=True, label_visibility="collapsed")
     with col_t3:

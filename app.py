@@ -308,38 +308,64 @@ with tab_sphere:
 
 with tab_diag:
     st.markdown("""
-    <div style='background:rgba(56,189,248,0.05); padding:1rem; border-radius:8px; border-left:4px solid #38bdf8; margin-bottom:1.5rem;'>
-        <h4 style='margin:0; font-size:1rem;'>Scientific Deep-Dive</h4>
-        <p style='margin:0; font-size:0.8rem; color:#94a3b8;'>Access specialized climate diagnostics and technical modules.</p>
+    <div style='background: linear-gradient(90deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.1) 100%); 
+                padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.3);
+                margin-bottom: 2rem; border-left: 5px solid #38bdf8;'>
+        <h2 style='margin:0; font-size:1.5rem; color:#f8fafc;'>🛰️ Mission Intelligence Launchpad</h2>
+        <p style='margin:0.5rem 0 0 0; color:#94a3b8; font-size:1rem;'>Choose a specialized diagnostic protocol to reveal deep-earth intelligence.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    diag_mode = st.selectbox("Select Diagnostic Protocol", [
-        "Anomaly Pulse", "Climate Zones", "Seasonal Pulse", "Climatology", 
-        "SST Pulse", "Cryosphere", "Ridgeline Pulse", "Comparison", 
-        "Data Acquisition", "Story Mode"
-    ])
+    # ─── LAUNCHPAD GRID ───────────────────────────────────────────────────────
+    modules = [
+        {"id": "Anomaly Pulse", "icon": "🔥", "desc": "Global temperature deviation analytics."},
+        {"id": "Climate Zones", "icon": "🌍", "desc": "Koppen-Geiger classification mapping."},
+        {"id": "Seasonal Pulse", "icon": "🍂", "desc": "Inter-annual variability diagnostics."},
+        {"id": "Climatology", "icon": "🌡️", "desc": "Long-term mean state visualization."},
+        {"id": "SST Pulse", "icon": "🍝", "desc": "Sea Surface Temperature anomalies."},
+        {"id": "Cryosphere", "icon": "❄️", "desc": "Polar ice and snow cover analysis."},
+        {"id": "Ridgeline Pulse", "icon": "📈", "desc": "Probability density distribution trends."},
+        {"id": "Comparison", "icon": "⚖️", "desc": "Cross-variable correlation engine."},
+        {"id": "Data Acquisition", "icon": "📡", "desc": "Live NASA/CDS data stream portal."},
+        {"id": "Story Mode", "icon": "📖", "desc": "Automated scientific narrative generator."}
+    ]
+
+    cols = st.columns(2)
+    for i, mod in enumerate(modules):
+        with cols[i % 2]:
+            with st.container(border=True):
+                st.markdown(f"### {mod['icon']} {mod['id']}")
+                st.caption(mod['desc'])
+                if st.button(f"Launch {mod['id']}", key=f"launch_{mod['id']}", use_container_width=True):
+                    st.session_state.active_diag = mod['id']
+                    st.toast(f"Launching {mod['id']} Module...", icon="🚀")
+
+    # ─── DYNAMIC MODULE RENDERING ─────────────────────────────────────────────
+    diag_mode = st.session_state.get('active_diag', "Anomaly Pulse")
     
+    st.markdown(f"---")
+    st.markdown(f"### ⚡ Current Protocol: {diag_mode}")
+
     if diag_mode == "Anomaly Pulse":
-        render_anomaly_pulse(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_anomaly_pulse(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Climate Zones":
-        render_climate_zones(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_climate_zones(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Seasonal Pulse":
-        render_seasonal_analysis(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_seasonal_analysis(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Climatology":
-        render_climatology(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_climatology(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "SST Pulse":
-        render_sst_pulse(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_sst_pulse(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Cryosphere":
-        render_cryosphere(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_cryosphere(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Ridgeline Pulse":
-        render_ridgeline_analytics(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_ridgeline_analytics(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Comparison":
-        render_comparison_view(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_comparison_view(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
     elif diag_mode == "Data Acquisition":
         render_data_acquisition_view()
     elif diag_mode == "Story Mode":
-        render_story_mode(ds, controls) if controls.get("variable") else st.info("Analysis requires data.")
+        render_story_mode(ds, controls) if controls.get("variable") else st.info("Select data in sidebar.")
 
 
 # ─── FOOTER ───────────────────────────────────────────────────────────────────
