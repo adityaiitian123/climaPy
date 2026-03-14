@@ -11,3 +11,4 @@ cftime>=1.6.2
 cdsapi>=0.7.0
 python-dotenv
 groq
+matplotlib>=3.8.0
