@@ -75,8 +75,12 @@ def render_sidebar(ds, metadata):
     variables = metadata.get("variables", [])
     
     if not variables:
-        st.sidebar.error("❌ No data variables found in dataset.")
-        st.sidebar.info("Please ensure your NetCDF file contains observational data.")
+        st.sidebar.error("❌ No data variables found.")
+        st.sidebar.warning("🛠️ **Auto-Repair Active:** The system is attempting to re-initialize the baseline NASA NASA MERRA-2 dataset. Please refresh the page if data doesn't appear in 5 seconds.")
+        
+        if st.sidebar.button("🔄 Force App Reset"):
+            st.rerun()
+
         controls["variable"] = None
         controls["units"] = "N/A"
         controls["time_index"] = 0

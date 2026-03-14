@@ -112,16 +112,41 @@ elif not os.path.exists(DATA_PATH):
     # Fallback to sample if NASA proof is somehow missing
     DATA_PATH = "data/sample_climate_data.nc"
     if not os.path.exists(DATA_PATH):
-        st.error("⚠️ Data pipeline inactive. Run `python backend/generate_nasa_proof.py` to initialize.")
-        st.stop()
+        # We don't stop here anymore; we'll handle empty state in sidebar
+        pass
+
 
 with st.spinner('🔄 Initializing Geospatial Intelligence Engine...'):
     try:
-        ds = ClimateDataLoader.load_dataset(DATA_PATH)
-        metadata = ClimateDataLoader.get_metadata_summary(ds)
+        # 1. Primary Load Effort
+        if os.path.exists(DATA_PATH):
+            ds = ClimateDataLoader.load_dataset(DATA_PATH)
+            variables = list(ds.data_vars) if ds else []
+        else:
+            ds = None
+            variables = []
+
+        # 2. ZERO-CONFIG AUTO-INITIALIZATION
+        # If no data found and user hasn't uploaded a file, FORCE generate NASA Intel proof
+        if (not ds or not variables) and uploaded_file is None:
+            from backend.generate_nasa_proof import generate_nasa_merra2_proof
+            generate_nasa_merra2_proof()
+            # Redirect to the newly generated file
+            DATA_PATH = "data/nasa_merra2_proof.nc" 
+            ds = ClimateDataLoader.load_dataset(DATA_PATH)
+            variables = list(ds.data_vars) if ds else []
+
+        if ds:
+            metadata = ClimateDataLoader.get_metadata_summary(ds)
+        else:
+            metadata = {"variables": [], "title": "Initialization Error"}
+            
     except Exception as e:
         st.error(f"Critical Failure during Data Ingestion: {e}")
-        st.stop()
+        ds = None
+        metadata = {"variables": [], "title": "System offline"}
+
+
 
 # ─── SIDEBAR ──────────────────────────────────────────────────────────────────
 controls = render_sidebar(ds, metadata)
