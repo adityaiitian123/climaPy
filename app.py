@@ -105,23 +105,67 @@ st.markdown("""
     background: transparent !important;
 }
 
+/* Base Tab List Container Wrapper - Needed for relative positioning of the arrow */
+.stTabs {
+    position: relative;
+}
+
+/* The arrow/fade indicator showing there is more content to the right */
+.stTabs::after {
+    content: '❯';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 15px;
+    width: 60px;
+    height: 72px;
+    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.95) 80%);
+    color: rgba(56, 189, 248, 0.7);
+    font-size: 1.2rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 20;
+    border-radius: 0 24px 24px 0;
+    opacity: 0.8;
+    animation: pulse-arrow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-arrow {
+    0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; text-shadow: 0 0 5px transparent; }
+    50% { transform: translateY(-50%) translateX(5px); opacity: 1; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+}
+
 /* Base Tab List Container - Floating Glassmorphism Pill */
 .stTabs [data-baseweb="tab-list"] {
     gap: 12px;
-    justify-content: center;
+    justify-content: flex-start; /* Changed to start to allow natural scrolling */
     background: rgba(15, 23, 42, 0.55) !important;
     backdrop-filter: blur(32px) saturate(200%);
     -webkit-backdrop-filter: blur(32px) saturate(200%);
     border-radius: 24px;
     padding: 10px !important;
+    padding-right: 40px !important; /* Make room for the arrow */
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 
         0 25px 50px -12px rgba(0, 0, 0, 0.8),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    margin: 1.5rem auto 3.5rem auto !important;
-    width: fit-content;
+    margin: 1.5rem 0 3.5rem 0 !important;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
     position: relative;
     z-index: 10;
+    /* Hide scrollbar for a cleaner look */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+
+.stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+    display: none;
 }
 
 /* Hide the default underline highlight */
@@ -132,6 +176,7 @@ st.markdown("""
 /* Individual Tab Button styling - Smooth & Subtle */
 .stTabs [data-baseweb="tab"] {
     height: 52px;
+    min-width: max-content; /* Ensure tabs don't squish */
     background: transparent !important;
     border: 1px solid transparent !important;
     color: #64748b !important;
