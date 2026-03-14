@@ -47,29 +47,6 @@ def render_sidebar(ds, metadata):
     <div style="height:1px; background:linear-gradient(90deg,transparent,rgba(56,189,248,0.3),transparent); margin-bottom:1.2rem;"></div>
     """, unsafe_allow_html=True)
 
-    # === ERA5 Injection Status ===
-    # Shows when a dataset was downloaded and injected via the Acquisition Portal
-    injected_path = st.session_state.get('era5_injected_path')
-    if injected_path:
-        import os
-        injected_name = os.path.basename(injected_path)
-        st.sidebar.markdown(f"""
-        <div style="background:linear-gradient(135deg,rgba(16,185,129,0.12) 0%,rgba(16,185,129,0.04) 100%);
-                    border:1px solid rgba(16,185,129,0.4); border-radius:12px; padding:0.85rem 1rem;
-                    margin-bottom:1.2rem; position:relative; overflow:hidden;">
-            <div style="position:absolute; top:-8px; right:-8px; opacity:0.08; font-size:3.5rem;">📡</div>
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.4rem;">
-                <span style="display:inline-block; width:8px; height:8px; background:#10b981;
-                             border-radius:50%; box-shadow:0 0 8px #10b981; flex-shrink:0;"></span>
-                <div style="font-size:0.65rem; font-weight:700; color:#10b981;
-                            text-transform:uppercase; letter-spacing:0.1em;">ERA5 INJECTED</div>
-            </div>
-            <div style="font-size:0.78rem; color:#cbd5e1; font-family:monospace;
-                        word-break:break-all; line-height:1.4;">{injected_name}</div>
-            <div style="font-size:0.65rem; color:#475569; margin-top:0.4rem;">Active in all Intelligence Views</div>
-        </div>
-        """, unsafe_allow_html=True)
-
     # === Variable Selector ===
     st.sidebar.markdown('<div class="sidebar-section-header">🎛 Observation Metric</div>', unsafe_allow_html=True)
     variables = metadata.get("variables", [])
@@ -94,7 +71,8 @@ def render_sidebar(ds, metadata):
     )
     
     controls["variable"] = selected_var
-    controls["units"]    = var_info.get(selected_var, {}).get("units", "unknown units")
+    # FIXED: Robust unit access using .get()
+    controls["units"]    = var_info.get(selected_var, {}).get("units", "units")
 
     st.sidebar.markdown("<div style='height:0.8rem'></div>", unsafe_allow_html=True)
 
@@ -111,7 +89,6 @@ def render_sidebar(ds, metadata):
         controls["time_index"] = selected_time_index
         controls["time_value"] = time_labels[selected_time_index]
         
-        # Show currently selected date nicely
         st.sidebar.markdown(f"""
         <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);
                     border-radius:8px;padding:0.6rem 0.9rem;margin-top:0.5rem;font-size:0.85rem;
@@ -128,31 +105,32 @@ def render_sidebar(ds, metadata):
 
     # === Dataset Inspector ===
     with st.sidebar.expander("🔍 Dataset Inspector", expanded=False):
-        st.markdown(f"**{metadata['title']}**", unsafe_allow_html=True)
+        st.markdown(f"**{metadata.get('title', 'Climate Dataset')}**", unsafe_allow_html=True)
         items = [
-            ("Coverage", metadata['spatial_coverage']),
-            ("Period", metadata['time_coverage']),
+            ("Coverage", metadata.get('spatial_coverage', 'Global')),
+            ("Period", metadata.get('time_coverage', 'N/A')),
         ]
         for label, val in items:
             st.markdown(f"<div style='font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;margin-top:0.5rem'>{label}</div><div style='color:#cbd5e1;font-size:0.9rem'>{val}</div>", unsafe_allow_html=True)
-        st.markdown("<div style='margin-top:0.8rem;font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;'>Dimensions</div>", unsafe_allow_html=True)
-        for dim, size in metadata['dimensions'].items():
-            st.markdown(f"<code style='color:#38bdf8;background:rgba(56,189,248,0.08);padding:2px 8px;border-radius:4px;font-size:0.82rem;'>{dim}: {size}</code> ", unsafe_allow_html=True)
+        
+        dimensions = metadata.get('dimensions', {})
+        if dimensions:
+            st.markdown("<div style='margin-top:0.8rem;font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;'>Dimensions</div>", unsafe_allow_html=True)
+            for dim, size in dimensions.items():
+                st.markdown(f"<code style='color:#38bdf8;background:rgba(56,189,248,0.08);padding:2px 8px;border-radius:4px;font-size:0.82rem;'>{dim}: {size}</code> ", unsafe_allow_html=True)
 
     st.sidebar.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
 
     # === Variable Info ===
     with st.sidebar.expander("📊 Variable Details", expanded=False):
-        for v in metadata.get("variables", []):
-            info = metadata.get("var_info", {}).get(v, {})
+        for v in variables:
+            info = var_info.get(v, {})
             selected_style = "background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);" if v == selected_var else ""
-            long_name = info.get('long_name', v)
-            units = info.get('units', 'N/A')
             st.markdown(f"""
             <div style="border:1px solid rgba(255,255,255,0.06);border-radius:8px;
                         padding:0.6rem 0.8rem;margin-bottom:0.4rem;{selected_style}">
-                <div style="font-weight:600;color:#e2e8f0;font-size:0.85rem;">{long_name}</div>
-                <div style="color:#475569;font-size:0.75rem;">Units: <code style="color:#94a3b8">{units}</code></div>
+                <div style="font-weight:600;color:#e2e8f0;font-size:0.85rem;">{info.get('long_name', v)}</div>
+                <div style="color:#475569;font-size:0.75rem;">Units: <code style="color:#94a3b8">{info.get('units', 'N/A')}</code></div>
             </div>
             """, unsafe_allow_html=True)
 
