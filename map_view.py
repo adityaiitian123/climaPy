@@ -21,7 +21,7 @@ def render_map_view(ds, controls):
         </div>
         """, unsafe_allow_html=True)
     with col_t2:
-        view_mode = st.radio("View Mode", ["3D Intelligence", "2D Heatmap"], horizontal=True, label_visibility="collapsed")
+        view_mode = st.radio("View Mode", ["3D Intelligence", "2D Heatmap"], index=1, horizontal=True, label_visibility="collapsed")
     with col_t3:
         show_anomaly = st.toggle("⚡ Anomaly Glow", value=True)
 
