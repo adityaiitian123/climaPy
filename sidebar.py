@@ -143,14 +143,16 @@ def render_sidebar(ds, metadata):
 
     # === Variable Info ===
     with st.sidebar.expander("📊 Variable Details", expanded=False):
-        for v in metadata["variables"]:
-            info = metadata["var_info"][v]
+        for v in metadata.get("variables", []):
+            info = metadata.get("var_info", {}).get(v, {})
             selected_style = "background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);" if v == selected_var else ""
+            long_name = info.get('long_name', v)
+            units = info.get('units', 'N/A')
             st.markdown(f"""
             <div style="border:1px solid rgba(255,255,255,0.06);border-radius:8px;
                         padding:0.6rem 0.8rem;margin-bottom:0.4rem;{selected_style}">
-                <div style="font-weight:600;color:#e2e8f0;font-size:0.85rem;">{info['long_name']}</div>
-                <div style="color:#475569;font-size:0.75rem;">Units: <code style="color:#94a3b8">{info['units']}</code></div>
+                <div style="font-weight:600;color:#e2e8f0;font-size:0.85rem;">{long_name}</div>
+                <div style="color:#475569;font-size:0.75rem;">Units: <code style="color:#94a3b8">{units}</code></div>
             </div>
             """, unsafe_allow_html=True)
 
